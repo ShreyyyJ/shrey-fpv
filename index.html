@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShreyFPV Productions — Elevate Your Story</title>
+
+  <!-- ─── Fonts ─── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Bebas Neue for display headings · DM Sans for body -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <!-- ─── Tailwind CSS CDN ─── -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ─── Tailwind Config ─── -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            electric: {
+              DEFAULT: '#00c6ff',
+              dark:    '#0072ff',
+              glow:    '#00c6ff33',
+            },
+            slate: {
+              950: '#060b18',
+            },
+          },
+          backgroundImage: {
+            'electric-grad': 'linear-gradient(135deg, #0072ff 0%, #00c6ff 100%)',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%':   { opacity: '0', transform: 'translateY(32px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            scanline: {
+              '0%':   { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(100vh)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 12px 2px #00c6ff55' },
+              '50%':       { boxShadow: '0 0 28px 6px #00c6ffaa' },
+            },
+          },
+          animation: {
+            fadeUp:     'fadeUp 0.8s ease forwards',
+            scanline:   'scanline 6s linear infinite',
+            pulseGlow:  'pulseGlow 2.5s ease-in-out infinite',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- ─── Font Awesome CDN ─── -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- ─── Global Styles ─── -->
+  <style>
+    /* Base */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-family: 'DM Sans', sans-serif; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #060b18; }
+    ::-webkit-scrollbar-thumb { background: #00c6ff55; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00c6ff; }
+
+    /* Noise overlay for atmosphere */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    /* Diagonal grid lines — subtle depth */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,198,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,198,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    body { background-color: #060b18; color: #e2e8f0; position: relative; }
+
+    /* ── Reusable helpers ── */
+    .section-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #00c6ff;
+    }
+
+    /* Electric glow text */
+    .glow-text {
+      text-shadow: 0 0 24px #00c6ff88, 0 0 60px #0072ff44;
+    }
+
+    /* Nav glass */
+    .nav-glass {
+      background: rgba(6,11,24,0.85);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 1px solid rgba(0,198,255,0.08);
+    }
+
+    /* Hero scanline animation */
+    .hero-scanline {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #00c6ff88 50%, transparent 100%);
+      animation: scanline 6s linear infinite;
+      pointer-events: none;
+    }
+
+    /* Gradient border card */
+    .grad-border {
+      position: relative;
+      background: linear-gradient(135deg, #0d1a2e 0%, #091525 100%);
+      border-radius: 12px;
+    }
+    .grad-border::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #00c6ff33 0%, transparent 60%);
+      z-index: -1;
+    }
+
+    /* Feature card icon wrapper */
+    .icon-ring {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,198,255,0.1);
+      border: 1px solid rgba(0,198,255,0.25);
+      transition: all 0.3s ease;
+    }
+    .grad-border:hover .icon-ring {
+      background: rgba(0,198,255,0.2);
+      box-shadow: 0 0 20px #00c6ff44;
+    }
+
+    /* Thumbnail hover */
+    .thumb-wrap {
+      position: relative; overflow: hidden; border-radius: 10px;
+      cursor: pointer;
+    }
+    .thumb-wrap img {
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  filter 0.5s ease;
+      filter: brightness(0.75) saturate(0.9);
+    }
+    .thumb-wrap:hover img {
+      transform: scale(1.07);
+      filter: brightness(0.55) saturate(1.2);
+    }
+    .thumb-overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      background: radial-gradient(circle at center, rgba(0,198,255,0.15) 0%, transparent 70%);
+    }
+    .thumb-wrap:hover .thumb-overlay { opacity: 1; }
+    .play-btn {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: rgba(0,198,255,0.9);
+      display: flex; align-items: center; justify-content: center;
+      transform: scale(0.8);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 0 0 #00c6ff55;
+    }
+    .thumb-wrap:hover .play-btn {
+      transform: scale(1);
+      box-shadow: 0 0 28px 8px #00c6ff44;
+    }
+
+    /* Nav link active / hover underline */
+    .nav-link {
+      position: relative;
+      color: #94a3b8;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.25s;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute; left: 0; bottom: -3px;
+      width: 0; height: 1.5px;
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover { color: #00c6ff; }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link.active { color: #00c6ff; }
+    .nav-link.active::after { width: 100%; }
+
+    /* Button styles */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 32px;
+      border-radius: 6px;
+      font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em;
+      background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%);
+      color: #fff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      box-shadow: 0 4px 20px rgba(0,114,255,0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.12);
+      box-shadow: 0 8px 32px rgba(0,198,255,0.45);
+    }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 32px;
+      border-radius: 6px;
+      font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em;
+      border: 1.5px solid rgba(0,198,255,0.5);
+      color: #00c6ff;
+      background: transparent;
+      transition: all 0.25s ease;
+    }
+    .btn-outline:hover {
+      background: rgba(0,198,255,0.1);
+      border-color: #00c6ff;
+      box-shadow: 0 0 20px rgba(0,198,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Stagger fade-up for hero content */
+    .delay-1 { animation-delay: 0.15s; opacity: 0; }
+    .delay-2 { animation-delay: 0.30s; opacity: 0; }
+    .delay-3 { animation-delay: 0.50s; opacity: 0; }
+    .delay-4 { animation-delay: 0.70s; opacity: 0; }
+
+    /* Mobile menu */
+    #mobile-menu {
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+      max-height: 0; overflow: hidden; opacity: 0;
+    }
+    #mobile-menu.open { max-height: 400px; opacity: 1; }
+
+    /* Section reveal */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Footer */
+    .footer-link { color: #64748b; font-size: 0.875rem; transition: color 0.2s; }
+    .footer-link:hover { color: #00c6ff; }
+    .social-icon {
+      width: 38px; height: 38px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #94a3b8;
+      font-size: 0.9rem;
+      transition: all 0.25s ease;
+    }
+    .social-icon:hover {
+      background: rgba(0,198,255,0.15);
+      border-color: rgba(0,198,255,0.4);
+      color: #00c6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,198,255,0.2);
+    }
+
+    /* Horizontal divider accent */
+    .accent-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,198,255,0.4) 50%, transparent 100%);
+    }
+  </style>
+</head>
+
+<body class="antialiased">
+
+  <!-- ════════════════════════════════════════════
+       STICKY NAVIGATION
+  ════════════════════════════════════════════ -->
+  <header id="navbar" class="nav-glass fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8">
+      <nav class="flex items-center justify-between h-16">
+
+        <!-- Logo -->
+        <a href="#home" class="flex items-center gap-2.5 group">
+          <!-- FPV drone icon -->
+          <div class="w-10 h-10 rounded-lg shadow-lg animate-pulseGlow">
+  <img src="assets/logo.jpg" class="w-full h-full object-cover rounded-lg" />
+          </div>
+          <span class="font-display text-xl tracking-wider text-white">
+  Shrey<span class="text-electric">FPV</span> Productions
+</span>
+        </a>
+
+        <!-- Desktop Links -->
+        <ul class="hidden md:flex items-center gap-8">
+          <li><a href="#home"      class="nav-link active">Home</a></li>
+          <li><a href="#work"      class="nav-link">Portfolio</a></li>
+          <li><a href="#features"  class="nav-link">Equipment</a></li>
+          <li><a href="#perspectives" class="nav-link">Perspectives</a></li>
+          <li>
+            <a href="#contact" class="btn-primary text-sm py-2 px-5">
+              <i class="fa-regular fa-paper-plane"></i> Contact
+            </a>
+          </li>
+        </ul>
+
+        <!-- Hamburger -->
+        <button id="hamburger" aria-label="Toggle menu"
+          class="md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-white/5 transition-colors">
+          <span class="ham-bar block w-6 h-0.5 bg-slate-300 transition-all duration-300 origin-center"></span>
+          <span class="ham-bar block w-6 h-0.5 bg-slate-300 transition-all duration-300 origin-center"></span>
+          <span class="ham-bar block w-4  h-0.5 bg-electric   transition-all duration-300 origin-center"></span>
+        </button>
+      </nav>
+
+      <!-- Mobile Menu -->
+      <div id="mobile-menu">
+        <ul class="flex flex-col gap-1 pb-5 pt-2">
+          <li><a href="#home"         class="block py-2.5 px-3 rounded-lg text-slate-300 hover:text-electric hover:bg-white/5 transition-all text-sm font-medium">Home</a></li>
+          <li><a href="#work"         class="block py-2.5 px-3 rounded-lg text-slate-300 hover:text-electric hover:bg-white/5 transition-all text-sm font-medium">Portfolio</a></li>
+          <li><a href="#features"     class="block py-2.5 px-3 rounded-lg text-slate-300 hover:text-electric hover:bg-white/5 transition-all text-sm font-medium">Equipment</a></li>
+          <li><a href="#perspectives" class="block py-2.5 px-3 rounded-lg text-slate-300 hover:text-electric hover:bg-white/5 transition-all text-sm font-medium">Perspectives</a></li>
+          <li class="mt-2"><a href="#contact" class="btn-primary w-full justify-center text-sm py-2.5"><i class="fa-regular fa-paper-plane"></i> Get in Touch</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ════════════════════════════════════════════
+       HERO SECTION
+  ════════════════════════════════════════════ -->
+  <section id="home" class="relative min-h-screen flex items-center overflow-hidden">
+
+    <!-- Background image with parallax feel -->
+    <div class="absolute inset-0 z-0">
+     <video autoplay muted loop playsinline class="w-full h-full object-cover">
+    <source src="assets/hero.mp4" type="video/mp4">
+     </video>
+      <!-- Dark gradient overlay — ensures text legibility -->
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/75 to-slate-950/40"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/30"></div>
+    </div>
+
+    <!-- Decorative scanline -->
+    <div class="hero-scanline z-10"></div>
+
+    <!-- Decorative vertical line -->
+    <div class="absolute left-8 top-1/2 -translate-y-1/2 z-10 hidden lg:flex flex-col items-center gap-3 select-none">
+      <span class="section-label" style="writing-mode:vertical-rl;transform:rotate(180deg)">Aerial Cinematography</span>
+      <div class="w-px flex-1 min-h-[60px] bg-gradient-to-b from-transparent via-electric/40 to-transparent"></div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-5 lg:px-8 py-32 w-full">
+      <div class="max-w-3xl">
+
+        <!-- Eyebrow -->
+        <p class="section-label animate-fadeUp delay-1 mb-5">
+          <i class="fa-solid fa-circle-dot mr-1.5 animate-pulse"></i>
+          ShreyFPV Productions — Pune, India
+        </p>
+
+        <!-- Headline -->
+        <h1 class="font-display text-[clamp(3.5rem,10vw,8rem)] leading-none tracking-wide text-white animate-fadeUp delay-2 glow-text">
+          ELEVATE<br/>
+          <span class="text-electric">YOUR STORY</span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="mt-6 text-slate-300 text-lg lg:text-xl font-light max-w-xl leading-relaxed animate-fadeUp delay-3">
+          Professional FPV videography that captures
+          <em class="text-white not-italic font-medium">perspectives others can't</em> —
+          from blazing-fast chase footage to impossibly smooth cinematic passes.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="mt-10 flex flex-wrap gap-4 animate-fadeUp delay-4">
+          <a href="#work" class="btn-primary">
+            <i class="fa-solid fa-play"></i> View Portfolio
+          </a>
+          <a href="#contact" class="btn-outline">
+            <i class="fa-regular fa-envelope"></i> Get in Touch
+          </a>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-8 animate-fadeUp delay-4">
+
+  <!-- Projects -->
+  <div>
+    <p class="font-display text-4xl text-electric glow-text">20+</p>
+    <p class="text-slate-400 text-xs uppercase tracking-widest mt-1">
+      Projects Done
+    </p>
+  </div>
+
+  <!-- 5.3K -->
+  <div>
+    <p class="font-display text-4xl text-white">5.3K</p>
+    <p class="text-slate-400 text-xs uppercase tracking-widest mt-1">
+      Cinematic
+    </p>
+  </div>
+
+  <!-- 240 FPS -->
+  <div>
+    <p class="font-display text-4xl text-white">240FPS</p>
+    <p class="text-slate-400 text-xs uppercase tracking-widest mt-1">
+      Slow Motion
+    </p>
+  </div>
+
+  <!-- 8:7 -->
+  <div>
+    <p class="font-display text-4xl text-white">8:7</p>
+    <p class="text-slate-400 text-xs uppercase tracking-widest mt-1">
+      Vertical / Horizontal
+    </p>
+  </div>
+
+</div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+      <span class="section-label">Scroll</span>
+      <div class="w-5 h-8 rounded-full border border-slate-600 flex items-start justify-center p-1">
+        <div class="w-1 h-2 rounded-full bg-electric animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════
+       FEATURES — "Dynamic Aerial Perspectives"
+  ════════════════════════════════════════════ -->
+  <section id="features" class="relative z-10 py-28 lg:py-36">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8">
+
+      <!-- Section header -->
+      <div class="text-center mb-16 reveal">
+        <p class="section-label mb-3"><i class="fa-solid fa-crosshairs mr-1.5"></i>What We Do</p>
+        <h2 class="font-display text-5xl lg:text-7xl text-white tracking-wide">
+          DYNAMIC AERIAL<br/><span class="text-electric">PERSPECTIVES</span>
+        </h2>
+        <p class="mt-5 text-slate-400 max-w-xl mx-auto text-base font-light">
+          Every frame is engineered — not just captured. We blend precision piloting with cinematic instinct.
+        </p>
+      </div>
+
+      <!-- 3-column feature grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
+
+        <!-- Col 1: Cinematic Quality -->
+        <div class="grad-border p-8 hover:-translate-y-1.5 transition-all duration-300 group">
+          <div class="icon-ring mb-6">
+            <i class="fa-solid fa-film text-electric text-xl"></i>
+          </div>
+          <h3 class="font-display text-2xl text-white tracking-wide mb-3">Cinematic Quality</h3>
+          <p class="text-slate-400 text-sm leading-relaxed font-light">
+            Every shot delivered in <strong class="text-slate-200 font-medium">4K and beyond</strong>, colour-graded to cinema standard.
+            Whether it's a slow golden-hour glide or a razor-sharp action sequence, the output is broadcast-ready.
+          </p>
+          <div class="mt-6 flex items-center gap-2 text-electric text-xs font-medium tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <i class="fa-solid fa-arrow-right text-[10px]"></i> DCI 4K / ProRes / LOG
+          </div>
+        </div>
+
+        <!-- Col 2: Fast & Agile -->
+        <div class="grad-border p-8 hover:-translate-y-1.5 transition-all duration-300 group" style="background: linear-gradient(135deg, #091525 0%, #0d1a2e 100%);">
+          <!-- Highlighted card with top glow -->
+          <div class="absolute inset-x-0 -top-px h-px bg-electric-grad rounded-full"></div>
+          <div class="icon-ring mb-6" style="background:rgba(0,198,255,0.2);border-color:rgba(0,198,255,0.5)">
+            <i class="fa-solid fa-bolt text-electric text-xl"></i>
+          </div>
+          <h3 class="font-display text-2xl text-white tracking-wide mb-3">Fast &amp; Agile</h3>
+          <p class="text-slate-400 text-sm leading-relaxed font-light">
+            <strong class="text-slate-200 font-medium">High-speed action</strong> coverage that conventional cameras simply cannot follow.
+            Our FPV rigs accelerate, dive, and bank at pilot-grade precision — capturing moments that feel impossible.
+          </p>
+          <div class="mt-6 flex items-center gap-2 text-electric text-xs font-medium tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <i class="fa-solid fa-arrow-right text-[10px]"></i> 140+ km/h top speed
+          </div>
+        </div>
+
+        <!-- Col 3: Unique Angles -->
+        <div class="grad-border p-8 hover:-translate-y-1.5 transition-all duration-300 group">
+          <div class="icon-ring mb-6">
+            <i class="fa-solid fa-eye text-electric text-xl"></i>
+          </div>
+          <h3 class="font-display text-2xl text-white tracking-wide mb-3">Unique Angles</h3>
+          <p class="text-slate-400 text-sm leading-relaxed font-light">
+            Dive through doorways, spiral around skyscrapers, skim millimetres above the ground.
+            <strong class="text-slate-200 font-medium">Perspectives traditional drones can't achieve</strong> — unlocked by agile FPV craft.
+          </p>
+          <div class="mt-6 flex items-center gap-2 text-electric text-xs font-medium tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <i class="fa-solid fa-arrow-right text-[10px]"></i> Indoor & outdoor rigs available
+          </div>
+        </div>
+      </div>
+
+      <!-- Accent divider -->
+      <div class="accent-line mt-20"></div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════
+       FEATURED WORK (Video Thumbnails)
+  ════════════════════════════════════════════ -->
+  <section id="work" class="relative z-10 py-20 lg:py-32">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8">
+
+      <!-- Section header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 reveal">
+        <div>
+          <p class="section-label mb-3"><i class="fa-solid fa-clapperboard mr-1.5"></i>Our Reel</p>
+          <h2 class="font-display text-5xl lg:text-7xl text-white tracking-wide">
+            FEATURED<br/><span class="text-electric">WORK</span>
+          </h2>
+        </div>
+        <p class="text-slate-400 text-sm max-w-xs leading-relaxed font-light md:text-right">
+          A curated selection of our finest aerial cinematography across urban, landscape, and action genres.
+        </p>
+      </div>
+
+      <!-- Video thumbnail grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 reveal">
+
+        <!-- Thumb 1 — Urban -->
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="thumb-wrap group block">
+          <img
+            src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80&auto=format&fit=crop"
+            alt="Urban FPV — City Skyline"
+            class="w-full aspect-video object-cover"
+          />
+          <div class="thumb-overlay">
+            <div class="play-btn">
+              <i class="fa-solid fa-play text-white text-lg ml-1"></i>
+            </div>
+            <p class="mt-4 text-white text-sm font-semibold tracking-wider uppercase">Urban Rush</p>
+            <p class="text-electric/80 text-xs mt-1">City Skyline · 4K</p>
+          </div>
+          <!-- Tag -->
+          <div class="absolute top-3 left-3 bg-slate-950/80 text-electric text-xs px-2.5 py-1 rounded-full border border-electric/20 backdrop-blur-sm font-medium uppercase tracking-wider">
+            Urban
+          </div>
+        </a>
+
+        <!-- Thumb 2 — Landscape (featured, taller) -->
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="thumb-wrap group block sm:row-span-1 lg:row-span-2">
+          <img
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80&auto=format&fit=crop"
+            alt="Landscape FPV — Mountain Valley"
+            class="w-full lg:h-full object-cover"
+            style="min-height: 280px;"
+          />
+          <div class="thumb-overlay">
+            <div class="play-btn">
+              <i class="fa-solid fa-play text-white text-lg ml-1"></i>
+            </div>
+            <p class="mt-4 text-white text-sm font-semibold tracking-wider uppercase">Valley Glide</p>
+            <p class="text-electric/80 text-xs mt-1">Mountain Landscape · 4K</p>
+          </div>
+          <div class="absolute top-3 left-3 bg-slate-950/80 text-electric text-xs px-2.5 py-1 rounded-full border border-electric/20 backdrop-blur-sm font-medium uppercase tracking-wider">
+            Landscape
+          </div>
+        </a>
+
+        <!-- Thumb 3 — Action -->
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="thumb-wrap group block">
+          <img
+            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop"
+            alt="Action FPV — Motorsport Chase"
+            class="w-full aspect-video object-cover"
+          />
+          <div class="thumb-overlay">
+            <div class="play-btn">
+              <i class="fa-solid fa-play text-white text-lg ml-1"></i>
+            </div>
+            <p class="mt-4 text-white text-sm font-semibold tracking-wider uppercase">Full Send</p>
+            <p class="text-electric/80 text-xs mt-1">Motorsport Chase · 4K</p>
+          </div>
+          <div class="absolute top-3 left-3 bg-slate-950/80 text-electric text-xs px-2.5 py-1 rounded-full border border-electric/20 backdrop-blur-sm font-medium uppercase tracking-wider">
+            Action
+          </div>
+        </a>
+
+        <!-- Thumb 4 — Real Estate -->
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="thumb-wrap group block">
+          <img
+            src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80&auto=format&fit=crop"
+            alt="Real Estate FPV flythrough"
+            class="w-full aspect-video object-cover"
+          />
+          <div class="thumb-overlay">
+            <div class="play-btn">
+              <i class="fa-solid fa-play text-white text-lg ml-1"></i>
+            </div>
+            <p class="mt-4 text-white text-sm font-semibold tracking-wider uppercase">Estate Tour</p>
+            <p class="text-electric/80 text-xs mt-1">Real Estate · Cinematic</p>
+          </div>
+          <div class="absolute top-3 left-3 bg-slate-950/80 text-electric text-xs px-2.5 py-1 rounded-full border border-electric/20 backdrop-blur-sm font-medium uppercase tracking-wider">
+            Real Estate
+          </div>
+        </a>
+
+        <!-- Thumb 5 — Event / Concert -->
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="thumb-wrap group block">
+          <img
+            src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80&auto=format&fit=crop"
+            alt="Event FPV — Concert crowd"
+            class="w-full aspect-video object-cover"
+          />
+          <div class="thumb-overlay">
+            <div class="play-btn">
+              <i class="fa-solid fa-play text-white text-lg ml-1"></i>
+            </div>
+            <p class="mt-4 text-white text-sm font-semibold tracking-wider uppercase">Crowd Dive</p>
+            <p class="text-electric/80 text-xs mt-1">Live Event · Indoor FPV</p>
+          </div>
+          <div class="absolute top-3 left-3 bg-slate-950/80 text-electric text-xs px-2.5 py-1 rounded-full border border-electric/20 backdrop-blur-sm font-medium uppercase tracking-wider">
+            Event
+          </div>
+        </a>
+
+      </div><!-- /.grid -->
+
+      <!-- View all CTA -->
+      <div class="mt-12 text-center reveal">
+        <a href="#work" class="btn-outline">
+          <i class="fa-solid fa-grid-2"></i> View Full Portfolio
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════
+       PERSPECTIVES BANNER (CTA strip)
+  ════════════════════════════════════════════ -->
+  <section id="perspectives" class="relative z-10 py-20 overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0">
+      <img
+        src="https://images.unsplash.com/photo-1446776858070-70c3d5ed6758?w=1600&q=80&auto=format&fit=crop"
+        alt="Aerial shot background"
+        class="w-full h-full object-cover opacity-20"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-slate-950"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-5 lg:px-8 text-center reveal">
+      <p class="section-label mb-4">Ready to Work Together?</p>
+      <h2 class="font-display text-5xl lg:text-8xl text-white tracking-wide mb-6">
+        READY TO ELEVATE<br/><span class="text-electric">YOUR PROJECT?</span>
+      </h2>
+      <p class="text-slate-400 max-w-lg mx-auto font-light text-base mb-10">
+        From commercial brand films to extreme sports coverage — tell us your vision
+        and we'll build a shot list that defies gravity.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#contact" class="btn-primary">
+          <i class="fa-solid fa-rocket"></i> Start a Project
+        </a>
+        <a href="#work" class="btn-outline">
+          <i class="fa-solid fa-eye"></i> See More Work
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════
+       CONTACT SECTION
+  ════════════════════════════════════════════ -->
+  <section id="contact" class="relative z-10 py-28 lg:py-36">
+    <div class="max-w-4xl mx-auto px-5 lg:px-8">
+
+      <div class="text-center mb-14 reveal">
+        <p class="section-label mb-3"><i class="fa-solid fa-satellite-dish mr-1.5"></i>Get in Touch</p>
+        <h2 class="font-display text-5xl lg:text-7xl text-white tracking-wide">
+          LET'S <span class="text-electric">FLY</span>
+        </h2>
+        <p class="mt-4 text-slate-400 font-light">Drop a message and we'll be back within 24 hours.</p>
+      </div>
+
+      <!-- Contact form -->
+      <div class="grad-border p-8 md:p-12 reveal">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+          <div class="flex flex-col gap-2">
+            <label class="text-slate-400 text-xs uppercase tracking-widest font-medium">Name</label>
+            <input type="text" placeholder="Your Name"
+              class="bg-slate-950/70 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-electric/60 focus:ring-1 focus:ring-electric/30 transition-all" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-slate-400 text-xs uppercase tracking-widest font-medium">Email</label>
+            <input type="email" placeholder="your@email.com"
+              class="bg-slate-950/70 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-electric/60 focus:ring-1 focus:ring-electric/30 transition-all" />
+          </div>
+        </div>
+        <div class="flex flex-col gap-2 mb-5">
+          <label class="text-slate-400 text-xs uppercase tracking-widest font-medium">Project Type</label>
+          <select class="bg-slate-950/70 border border-white/10 rounded-lg px-4 py-3 text-slate-300 text-sm focus:outline-none focus:border-electric/60 transition-all">
+            <option value="" disabled selected>Select a project type…</option>
+            <option>Commercial / Brand Film</option>
+            <option>Real Estate</option>
+            <option>Sports / Action</option>
+            <option>Events / Weddings</option>
+            <option>Music Video</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-2 mb-8">
+          <label class="text-slate-400 text-xs uppercase tracking-widest font-medium">Message</label>
+          <textarea rows="5" placeholder="Tell us about your project…"
+            class="bg-slate-950/70 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-electric/60 focus:ring-1 focus:ring-electric/30 transition-all resize-none"></textarea>
+        </div>
+        <button class="btn-primary w-full justify-center">
+          <i class="fa-solid fa-paper-plane"></i> Send Message
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════ -->
+  <footer class="relative z-10 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+
+        <!-- Brand column -->
+        <div>
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-7 h-7 rounded-lg bg-electric-grad flex items-center justify-center">
+              <i class="fa-solid fa-drone-front text-white text-xs"></i>
+            </div>
+            <span class="font-display text-lg tracking-wider text-white">Shrey<span class="text-electric">FPV</span></span>
+          </div>
+          <p class="text-slate-500 text-sm font-light leading-relaxed max-w-xs">
+            Professional FPV drone videography. Capturing the impossible, one flight at a time.
+          </p>
+          <!-- Social links -->
+          <div class="flex gap-2.5 mt-5">
+            <a href="#" aria-label="YouTube"   class="social-icon"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" aria-label="Instagram" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="Vimeo"     class="social-icon"><i class="fa-brands fa-vimeo-v"></i></a>
+            <a href="#" aria-label="LinkedIn"  class="social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <!-- Nav column -->
+        <div>
+          <p class="text-white text-xs uppercase tracking-widest font-semibold mb-4">Navigation</p>
+          <ul class="flex flex-col gap-2.5">
+            <li><a href="#home"         class="footer-link hover:pl-1 transition-all">Home</a></li>
+            <li><a href="#work"         class="footer-link hover:pl-1 transition-all">Portfolio</a></li>
+            <li><a href="#features"     class="footer-link hover:pl-1 transition-all">Equipment</a></li>
+            <li><a href="#perspectives" class="footer-link hover:pl-1 transition-all">Perspectives</a></li>
+            <li><a href="#contact"      class="footer-link hover:pl-1 transition-all">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact column -->
+        <div>
+          <p class="text-white text-xs uppercase tracking-widest font-semibold mb-4">Contact</p>
+          <ul class="flex flex-col gap-3">
+            <li class="flex items-center gap-3 text-slate-400 text-sm">
+              <i class="fa-regular fa-envelope w-4 text-electric"></i>
+              <span>hello@shreyfpv.com</span>
+            </li>
+            <li class="flex items-center gap-3 text-slate-400 text-sm">
+              <i class="fa-solid fa-location-dot w-4 text-electric"></i>
+              <span>Mumbai, Maharashtra, India</span>
+            </li>
+            <li class="flex items-center gap-3 text-slate-400 text-sm">
+              <i class="fa-solid fa-circle-check w-4 text-electric"></i>
+              <span>DGCA Licensed · Fully Insured</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Accent line -->
+      <div class="accent-line mb-6"></div>
+
+      <!-- Copyright -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-slate-600 text-xs">
+          &copy; 2026 ShreyFPV Productions. All rights reserved.
+        </p>
+        <p class="text-slate-700 text-xs">
+          Made with <span class="text-electric">♥</span> &amp; precision flying.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ════════════════════════════════════════════
+       VANILLA JAVASCRIPT
+  ════════════════════════════════════════════ -->
+  <script>
+    // ─── Hamburger / Mobile Menu ───────────────────────────────
+    const hamburger   = document.getElementById('hamburger');
+    const mobileMenu  = document.getElementById('mobile-menu');
+    const hamBars     = document.querySelectorAll('.ham-bar');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      // Animate bars into an ✕
+      if (isOpen) {
+        hamBars[0].style.transform = 'translateY(8px) rotate(45deg)';
+        hamBars[1].style.opacity   = '0';
+        hamBars[2].style.transform = 'translateY(-8px) rotate(-45deg)';
+        hamBars[2].style.width     = '24px';
+      } else {
+        hamBars[0].style.transform = '';
+        hamBars[1].style.opacity   = '1';
+        hamBars[2].style.transform = '';
+        hamBars[2].style.width     = '16px';
+      }
+    });
+
+    // Close mobile menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamBars[0].style.transform = '';
+        hamBars[1].style.opacity   = '1';
+        hamBars[2].style.transform = '';
+        hamBars[2].style.width     = '16px';
+      });
+    });
+
+
+    // ─── Navbar shadow on scroll ──────────────────────────────
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 30) {
+        navbar.style.boxShadow = '0 4px 30px rgba(0,0,0,0.6)';
+      } else {
+        navbar.style.boxShadow = 'none';
+      }
+    }, { passive: true });
+
+
+    // ─── Active Nav Link (IntersectionObserver) ───────────────
+    const sections  = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('a.nav-link');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+          });
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+
+    sections.forEach(sec => sectionObserver.observe(sec));
+
+
+    // ─── Scroll Reveal (IntersectionObserver) ────────────────
+    const revealEls = document.querySelectorAll('.reveal');
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // Slight stagger for grid children
+          entry.target.style.transitionDelay = `${i * 0.06}s`;
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealEls.forEach(el => revealObserver.observe(el));
+
+
+    // ─── Subtle parallax on hero background ──────────────────
+    const heroBg = document.getElementById('hero-bg');
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      if (scrollY < window.innerHeight) {
+        heroBg.style.transform = `translateY(${scrollY * 0.3}px)`;
+      }
+    }, { passive: true });
+
+
+    // ─── Contact form — prevent default & show toast ─────────
+    const sendBtn = document.querySelector('#contact button.btn-primary');
+    sendBtn && sendBtn.addEventListener('click', () => {
+      // Simple toast feedback
+      const toast = document.createElement('div');
+      toast.textContent = '✓ Message sent! We\'ll be in touch soon.';
+      toast.style.cssText = `
+        position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+        background:linear-gradient(135deg,#0072ff,#00c6ff); color:#fff;
+        padding:12px 28px; border-radius:40px; font-size:0.875rem; font-weight:600;
+        box-shadow:0 8px 32px rgba(0,198,255,0.35); z-index:9999;
+        opacity:0; transition:all 0.4s ease; pointer-events:none;
+      `;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.style.opacity   = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+      });
+      setTimeout(() => {
+        toast.style.opacity   = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => toast.remove(), 400);
+      }, 3200);
+    });
+  </script>
+
+</body>
+</html>
