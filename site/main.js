@@ -13,14 +13,10 @@
   /* ── Hamburger / mobile menu ─────────────────────────────── */
   const hamburger  = $('#hamburger');
   const mobileMenu = $('#mobile-menu');
-  const hamBars    = $$('.ham-bar');
 
   function setBars(open) {
-    if (hamBars.length < 3) return;
-    hamBars[0].style.transform = open ? 'translateY(8px) rotate(45deg)'   : '';
-    hamBars[1].style.opacity   = open ? '0' : '1';
-    hamBars[2].style.transform = open ? 'translateY(-8px) rotate(-45deg)' : '';
-    hamBars[2].style.width     = open ? '24px' : '16px';
+    if (!hamburger) return;
+    hamburger.classList.toggle('is-open', open); // CSS drives the spring morph
   }
 
   if (hamburger && mobileMenu) {
@@ -126,7 +122,7 @@
       }
       // If the access key hasn't been configured yet, fail gracefully.
       if (!key || key.indexOf('YOUR_') === 0) {
-        toast('Form not configured yet — email shreyfpvproductions@gmail.com', false);
+        toast('Form not configured yet — email hello@shreyfpvproductions.com', false);
         return;
       }
 
@@ -152,7 +148,7 @@
           throw new Error(json.message || 'Request failed');
         }
       } catch (err) {
-        toast('Something went wrong. Email shreyfpvproductions@gmail.com', false);
+        toast('Something went wrong. Email hello@shreyfpvproductions.com', false);
       } finally {
         btn.disabled = false;
         btn.innerHTML = original;
@@ -199,4 +195,88 @@
       video.onended = reset;
     });
   });
+
+  /* ── Sliders (testimonials / featured reels): arrows + dots + snap ── */
+  $$('[data-slider]').forEach((root) => {
+    const track    = $('[data-slider-track]', root);
+    const controls = $('[data-slider-controls]', root);
+    if (!track) return;
+    const items = $$('.slider-item', track);
+    if (!items.length) return;
+    const prev = $('[data-slider-prev]', root);
+    const next = $('[data-slider-next]', root);
+    const dotsWrap = $('[data-slider-dots]', root);
+    let dots = [];
+
+    const base = () => items[0].offsetLeft;
+    const overflowing = () => track.scrollWidth > track.clientWidth + 8;
+    const activeIndex = () => {
+      let best = 0, dist = Infinity;
+      items.forEach((it, i) => {
+        const d = Math.abs((it.offsetLeft - base()) - track.scrollLeft);
+        if (d < dist) { dist = d; best = i; }
+      });
+      return best;
+    };
+    const atEnd = () => track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+    const goTo = (i) => {
+      const it = items[Math.max(0, Math.min(i, items.length - 1))];
+      track.scrollTo({ left: it.offsetLeft - base(), behavior: 'smooth' });
+    };
+
+    if (dotsWrap) {
+      dots = items.map((_, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'slider-dot';
+        b.setAttribute('aria-label', `Go to slide ${i + 1}`);
+        b.addEventListener('click', () => goTo(i));
+        dotsWrap.appendChild(b);
+        return b;
+      });
+    }
+
+    const update = () => {
+      if (controls) controls.style.display = overflowing() ? '' : 'none';
+      const a = activeIndex();
+      dots.forEach((d, i) => d.classList.toggle('active', i === a));
+      if (prev) prev.disabled = a === 0;
+      if (next) next.disabled = atEnd();
+    };
+
+    prev && prev.addEventListener('click', () => goTo(activeIndex() - 1));
+    next && next.addEventListener('click', () => goTo(activeIndex() + 1));
+    track.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+
+  /* ── Blog: search + category filtering ── */
+  const blogGrid = $('#blog-grid');
+  if (blogGrid) {
+    const cards  = $$('.post-card[data-category]'); // includes the featured card
+    const chips  = $$('.blog-chip');
+    const search = $('#blog-search');
+    const empty  = $('#blog-empty');
+    let category = 'all';
+    const apply = () => {
+      const q = (search && search.value || '').toLowerCase().trim();
+      let visible = 0;
+      cards.forEach((card) => {
+        const okCat = category === 'all' || card.dataset.category === category;
+        const okQ = !q || card.textContent.toLowerCase().includes(q);
+        const show = okCat && okQ;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      if (empty) empty.classList.toggle('hidden', visible > 0);
+    };
+    chips.forEach((chip) => chip.addEventListener('click', () => {
+      chips.forEach((c) => c.classList.remove('active'));
+      chip.classList.add('active');
+      category = chip.dataset.category;
+      apply();
+    }));
+    search && search.addEventListener('input', apply);
+  }
 })();
