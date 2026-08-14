@@ -1013,3 +1013,45 @@ a.post-card:hover .post-thumb img { transform: scale(1.06); filter: brightness(0
 @media (hover: hover) {
   .testi-projects a:hover { color: #00c6ff; }
 }
+
+/* ═══════════════════════════════════════════════
+   MOBILE OPTIMIZATION (≤767px) — spacing + subtext
+   Desktop (≥768px) is untouched.
+   ═══════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* 7 + 12: one consistent subtext size site-wide on mobile */
+  .subtext-m { font-size: 0.875rem !important; line-height: 1.6 !important; }
+
+  /* 1 + 13: trim vertical whitespace between/within sections */
+  #features { padding-top: 2rem !important; }
+  #work     { padding-top: 2.25rem !important; }
+  #clients  { padding-top: 1.75rem !important; }
+  #featured-on { padding-top: 2.25rem !important; }
+  #testimonials { padding-top: 2.25rem !important; padding-bottom: 1.25rem !important; }
+  #faq      { padding-top: 1.25rem !important; padding-bottom: 2.5rem !important; }
+
+  /* tighten the big section-heading blocks' bottom margins on mobile */
+  #featured-on .mb-12, #testimonials .mb-12, #faq .mb-12 { margin-bottom: 1.75rem !important; }
+
+  /* 3: feature cards — reveal the hover-only line on touch (no hover exists) */
+  #features .card-cta { opacity: 1 !important; }
+
+  /* 2: "Capturing moments others never will" heading block sits tighter */
+  #features .max-w-3xl { padding-bottom: 0 !important; }
+
+  /* 9: blog — cut the gap between last cards and footer */
+  .blog-main-pad { padding-bottom: 3.25rem !important; }
+
+  /* blog hero header spacing tighten */
+  .blog-head-pad { padding-top: 6.5rem !important; padding-bottom: 0 !important; }
+
+  /* 1a: tighten gap between carousel arrows/dots and the Start Project buttons */
+  #testimonials .mb-14 { margin-bottom: 1.5rem !important; }
+
+  /* 2: Featured Work — pull heading, subtext and first playcard closer */
+  #work .mb-14 { margin-bottom: 1.5rem !important; }
+  #work .gap-6 { gap: 0.75rem !important; }
+
+  /* 3: Approach — reduce gap between the heading block and the cards */
+  #features .mb-10 { margin-bottom: 1.5rem !important; }
+}
